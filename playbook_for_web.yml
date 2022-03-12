@@ -1,0 +1,26 @@
+---
+- name: 
+  hosts: debian_WEB
+  become: yes
+  
+  vars:
+    src_file: ./mysite/index.html
+    dest_file: /var/www/html
+  
+  tasks:
+  - name: ping servers
+    ping:
+
+  - name: install Apache
+    apt: name=apache2 state=latest
+
+  - name: copy files to web server
+    copy: src={{src_file}} dest={{dest_file}} mode=0555
+    notify: restart Apache in case of changes
+
+  - name: start Apache and enable on boot
+    service: name=apache2 state=started enabled=yes
+
+  handlers:
+  - name: restart Apache in case of changes
+    service: name=apache2 state=restarted
